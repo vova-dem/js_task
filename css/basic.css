@@ -1,0 +1,47 @@
+/* @font-face {
+    font-family: 'IntroRegular';
+    src: url('../fonts/introregular.eot');
+    src: url('../fonts/introregular.eot') format('embedded-opentype'),
+         url('../fonts/introregular.woff2') format('woff2'),
+         url('../fonts/introregular.woff') format('woff'),
+         url('../fonts/introregular.ttf') format('truetype'),
+         url('../fonts/introregular.svg') format('svg');
+}
+
+body {
+	font-family: "IntroRegular", Helvetica, Arial, sans-serif;
+	font-size: 13px;
+	color: #313246;
+}
+p {
+    margin-bottom: 0;
+}
+label {
+    font-weight: normal;
+}
+a {
+}
+a:hover, a:focus {
+}
+@media (min-width: 1200px) {
+	.container-custom {
+		width: 1100px;
+		max-width: none;
+		padding: 0;
+	}
+}
+@media (max-width: 767px) {
+    .container {
+        padding-left: 10px;;
+        padding-right: 10px;
+    }
+}
+.left-sidebar {
+    width: 258px;
+    float: left;
+    margin-right: 28px;
+}
+.main-content {
+    float: left;
+    width: 814px;
+} */
