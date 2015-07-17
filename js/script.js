@@ -9,6 +9,19 @@ function isInteger(n) {
     return n === +n && n === (n|0);
 }
 
+// check if date 
+function isDate(date) {
+    return!!(function(d){return(d!=='Invalid Date'&&!isNaN(d))})(new Date(date));
+}
+function isDateObject(date) {
+	return Object.prototype.toString.call(date) === '[object Date]'
+}
+
+// check if function
+function isFunction(f) {
+  return Object.prototype.toString.call(f) == '[object Function]';
+}
+
 // get object by ptoperty value
 function getByValue(arr, value) {
   var o;
@@ -23,6 +36,27 @@ function getByValue(arr, value) {
     }
   }
 }
+// /get object by ptoperty value
+
+// Indexof array method if it is not suported
+var indexOf = function(needle) {
+	if(typeof Array.prototype.indexOf === 'function') {
+		indexOf = Array.prototype.indexOf;
+	} else {
+		indexOf = function(needle) {
+			var i = -1, index = -1;
+			for(i = 0; i < this.length; i++) {
+				if(this[i] === needle) {
+					index = i;
+					break;
+				}
+			}
+			return index;
+		};
+	}
+	return indexOf.call(this, needle);
+};
+// /Indexof array method if it is not suported
 
 // Dependency Injection 
 var Injector = {
@@ -62,17 +96,9 @@ var SimpleLogger = function() {};
 SimpleLogger.prototype = Object.create(Logger);
 
 SimpleLogger.prototype.log = function(log){
-	/*console.log(log);*/
 	if ( log[1] == 1 ) {
 		alert("Error: " + log[0]);
 		throw new Error(log[0]);
-		/*try {
-			throw new Error(log[0])
-		}
-		catch(e) {
-			console.error(e.name + " " + e.message);
-			alert(e.name + " " + e.message);
-		}*/
 	} else if ( log[1] == 2 ) {
 		console.warn(log[0]);
 		alert("Warning: " + log[0]);
@@ -96,25 +122,6 @@ itemController.add(["Message2222", 2]);
 itemController.add(["Message333333", 3]);*/
 //  /Message Logger
 
-// Indexof array method if it is not suported
-var indexOf = function(needle) {
-	if(typeof Array.prototype.indexOf === 'function') {
-		indexOf = Array.prototype.indexOf;
-	} else {
-		indexOf = function(needle) {
-			var i = -1, index = -1;
-			for(i = 0; i < this.length; i++) {
-				if(this[i] === needle) {
-					index = i;
-					break;
-				}
-			}
-			return index;
-		};
-	}
-	return indexOf.call(this, needle);
-};
-// /Indexof array method if it is not suported
 
 // array of allowed DataTypes
 var DataTypes = {
@@ -140,22 +147,27 @@ function checkType(type, value) {
 			return isFloat(value);
 			break;
 		case 'date': 
-			return isDate(value)
+			/*return isDate(value)*/
+			return isDateObject(value);
+			return 
 			break;
 		case 'datetime': 
-			return isDate(value)
+			/*return isDate(value)*/
+			return isDateObject(value);
 			break;
 		case 'time': 
-			return isDate(value)
+			/*return isDate(value)*/
+			return isDateObject(value);
+			break;
+		case 'bool': 
+			return typeof value === 'boolean'
 			break;
 	}
 }
 /*var datedate = new Date();
 console.log(Object.prototype.toString.call(datedate) == '[object Date]');
 console.log(datedate.constructor.toString());*/
-function isDate(date) {
-    return!!(function(d){return(d!=='Invalid Date'&&!isNaN(d))})(new Date(date));
-}
+
 
 
 // array of allowed Propeties in dataFormats
@@ -196,7 +208,7 @@ var data =
 ];
 
 
-// Validation of dataFormats
+// Validation
 function dataFormatsValidation(dataFormats, data) {
 	// dataFormats validation
 	for (var i = 0; i < dataFormats.length; i++) {
@@ -241,28 +253,63 @@ function dataFormatsValidation(dataFormats, data) {
 
 	/*var propertyName = dataFormats[0].Name;*/
 	for (var i = 0; i < data.length; i++) {
-		/*if ( !data[i].hasOwnProperty(propertyName) ) {
-			itemController.add([ propertyName + " is Required. Check element: " + i + " of data array", 1]);
-		} 
-		if ( typeof data[i][] != string )
-		console.log(typeof data[i][propertyName])*/
-		/*for ( var prop in data[i] ) {
-			var relatedDataFormat = getByValue(dataFormats, prop)
-			console.log(relatedDataFormat);
-
-		}*/
-
 		for (var j = 0; j < requiredFields.length; j++) {
 			if ( !data[i].hasOwnProperty(requiredFields[j]) ) {
 				itemController.add([ requiredFields[i] + " is Required. Check element: " + i + " of data array", 1]);
 			}
 		}
+
+		
+		for ( var prop in data[i] ) {
+			o = getByValue(dataFormats, prop);
+			console.log(o);
+			if ( !checkType(o.DataType, data[i][prop]) ) {
+				itemController.add(["DataType is not correct in element: " + i + " of data array, it should be " + o.DataType + "!", 1]);
+			}
+		}	
+
 	}
+}
+
+function addCalculatedProperty(dataFormats, data) {
+	/*var calculatedProperties = [];*/
+	for (var i = 0; i < dataFormats.length; i++) {
+		if ( dataFormats[i].CalculateFrom && dataFormats[i].Calculate ) {
+			/*calculatedProperties.push(dataFormats[i].Name);*/
+			for (var j = 0; j < data.length; j++) {
+				for (var k = 0; k < dataFormats[i].CalculateFrom.length; k++) {
+					if ( !data[j].hasOwnProperty(dataFormats[i].CalculateFrom[k]) ) {
+						itemController.add(["There are no field to calculate in element: " + j + " of data array", 2]);
+						break;
+					}
+				}
+				console.log(dataFormats[i].Name);
+				var arguments = [];
+				for (var k = 0; k < dataFormats[i].CalculateFrom.length; k++) {
+					arguments.push(data[j][dataFormats[i].CalculateFrom[k]]);
+					console.log(data[j][dataFormats[i].CalculateFrom[k]]);
+				}
+				data[j][dataFormats[i].Name] = dataFormats[i].Calculate.apply(this, arguments); // not finished
+			}
+		}
+		/*for ( var prop in dataFormats[i] ) {
+			console.log(prop);
+		}*/
+		/*isFunction(f);*/
+	}
+	for (var j = 0; j < data.length; j++) {
+		console.log(data[j]);
+	}
+}
+
+function grid(dataFormats, data) {
+	dataFormatsValidation(dataFormats, data);
+	addCalculatedProperty(dataFormats, data);
 }
 
 
 
 $(document).ready(function(){
-	dataFormatsValidation(dataFormats, data);
+	grid(dataFormats, data);
 });
 
